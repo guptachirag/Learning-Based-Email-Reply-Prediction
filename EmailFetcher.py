@@ -11,7 +11,7 @@ def printEmail(emailString):
         for payload in message.get_payload():
             print payload.get_payload()
     else:
-        print b.get_payload()
+        print message.get_payload()
         
 
 def printInboxEmails(imap):
