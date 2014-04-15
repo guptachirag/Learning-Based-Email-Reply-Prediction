@@ -1,7 +1,9 @@
 import imaplib
 import email
 from bs4 import BeautifulSoup
-OUTPUT_DIRECTORY="C:\Users\Vaseem\Documents\GitHub\Fetch-Email-Using-IMAP\email"
+
+OUTPUT_DIRECTORY="C:\Users\Vaseem\Documents\GitHub\Fetch-Email-Using-IMAP\email" #Path where emails are saved
+Num_MAIL=20  #Number of mails to save on disk
 
 def extract_text( email_message_instance):
     maintype = email_message_instance.get_content_maintype()
@@ -19,42 +21,42 @@ def printEmail(emailString):
     print "To : " + message['To']
     print "Subject : " + message['Subject']
     print "TEXT BODY : "
-    print extract_text(message)
-    """
-    if message.is_multipart():
-        for payload in message.get_payload():
-            soup = BeautifulSoup(payload.get_payload())
-            print soup.get_text()
-            print "--------------------"
-            print payload.get_payload()
-    else:
-        soup = BeautifulSoup(message.get_payload())
-        print soup.get_text()
-        print "--------------------"
-        print message.get_payload()
-        """
+    Email_text=extract_text(message)
+    soup = BeautifulSoup(Email_text)
+    print soup.get_text()
+    
         
 def saveToFolder(num,data):
-    f = open('%s/%s.eml' %(OUTPUT_DIRECTORY, num), 'wb')
+    f = open('%s/%s.eml' %(OUTPUT_DIRECTORY, -num), 'wb')
     f.write(data)
     f.close()
 
-def printInboxEmails(imap):
+def read_from_disk():
+    for i in range(1,Num_MAIL):
+        print "\n\n----------------------------------------- Processing mail no:%d --------------------\n"%(i)
+        f = open('%s/%s.eml' %(OUTPUT_DIRECTORY, i), 'r')
+        data=f.read()
+        f.close()
+        printEmail(data)
+
+def saveInboxEmails(imap):
     status,data = imap.select("INBOX")
-    
+
     if status == 'OK' :
         status,data = imap.search(None,"ALL")
         emailIds = data[0].split()
-        for i in range(-1,-4,-1):
-            rv,data = imap.fetch(emailIds[i], "(RFC822)")
+
+        for i in range(-1,-Num_MAIL,-1):
+            rv,mail = imap.fetch(emailIds[i], "(RFC822)")
             if rv != 'OK' :
                 print "ERROR getting message", i
                 return
-            printEmail(data[0][1])
-            saveToFolder(i,data[0][1])
-        
+            #printEmail(mail[0][1])
+            saveToFolder(i,mail[0][1])
 
-def fetch(username,password):
+def login():
+    username = raw_input("Enter emailid : ")
+    password = raw_input("Enter password : ")
     imap = imaplib.IMAP4_SSL('imap.gmail.com')
 
     try:
@@ -63,14 +65,12 @@ def fetch(username,password):
         print "LOGIN FAILED... "
 
     status,mailboxes = imap.list()
-    printInboxEmails(imap);
+    saveInboxEmails(imap)
     imap.logout()
-    
 
 def main() :
-    username = raw_input("Enter emailid : ")
-    password = raw_input("Enter password : ")
-    fetch(username,password)
+    login()
+    read_from_disk()
 
 main()
     
