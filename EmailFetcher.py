@@ -2,7 +2,7 @@ import imaplib
 import email
 from bs4 import BeautifulSoup
 
-OUTPUT_DIRECTORY="C:\Users\Vaseem\Documents\GitHub\Fetch-Email-Using-IMAP\email" #Path where emails are saved
+OUTPUT_DIRECTORY="email" #Path where emails are saved
 Num_MAIL=20  #Number of mails to save on disk
 
 def extract_text( email_message_instance):
@@ -14,18 +14,17 @@ def extract_text( email_message_instance):
     elif maintype == 'text':
         return email_message_instance.get_payload()
     
-
 def printEmail(emailString):
     message = email.message_from_string(emailString)
     print "From : " + message['From']
     print "To : " + message['To']
     print "Subject : " + message['Subject']
     print "TEXT BODY : "
-    Email_text=extract_text(message)
-    soup = BeautifulSoup(Email_text)
-    print soup.get_text()
-    
-        
+    emailText = extract_text(message)
+    if emailText != None:
+        emailText = BeautifulSoup(emailText).get_text()
+    print emailText
+
 def saveToFolder(num,data):
     f = open('%s/%s.eml' %(OUTPUT_DIRECTORY, -num), 'wb')
     f.write(data)
