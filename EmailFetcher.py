@@ -2,8 +2,12 @@ import imaplib
 import email
 from bs4 import BeautifulSoup
 
+<<<<<<< HEAD
 INBOX_DIRECTORY="email\inbox"   #Path where Inbox emails are saved
 SENT_DIRECTORY="email\sent"  #Path where Sent emails are saved
+=======
+OUTPUT_DIRECTORY="email" #Path where emails are saved
+>>>>>>> 1c00f155520d4059b5cd170d73060def55c4dc6b
 Num_MAIL=20  #Number of mails to save on disk
 
 def extract_text( email_message_instance):
@@ -26,8 +30,13 @@ def printEmail(emailString):
         emailText = BeautifulSoup(emailText).get_text()
     print emailText
 
+<<<<<<< HEAD
 def saveToFolder(num,data,directory):
     f = open('%s/%s.eml' %(directory, -num), 'wb')
+=======
+def saveToFolder(num,data):
+    f = open('%s/%s.eml' %(OUTPUT_DIRECTORY, -num), 'wb')
+>>>>>>> 1c00f155520d4059b5cd170d73060def55c4dc6b
     f.write(data)
     f.close()
 
