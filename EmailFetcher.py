@@ -1,31 +1,8 @@
 import imaplib
-import email
-from bs4 import BeautifulSoup
 
 INBOX_DIRECTORY="email\inbox"   #Path where Inbox emails are saved
 SENT_DIRECTORY="email\sent"  #Path where Sent emails are saved
 Num_MAIL=20  #Number of mails to save on disk
-
-def extract_text( email_message_instance):
-    maintype = email_message_instance.get_content_maintype()
-    if maintype == 'multipart':
-        for part in email_message_instance.get_payload():
-            if part.get_content_maintype() == 'text':
-                return part.get_payload()
-    elif maintype == 'text':
-        return email_message_instance.get_payload()
-    
-def printEmail(emailString):
-    message = email.message_from_string(emailString)
-    print "From : " + message['From']
-    print "To : " + message['To']
-    print "Subject : " + message['Subject']
-    print "TEXT BODY : "
-    emailText = extract_text(message)
-    if emailText != None:
-        emailText = BeautifulSoup(emailText).get_text()
-    print emailText
-
 
 def saveToFolder(num,data,directory):
     f = open('%s/%s.eml' %(directory, -num), 'wb')
@@ -44,7 +21,7 @@ def saveEmails(imap,mailbox):
             if rv != 'OK' :
                 print "ERROR getting message", -i
                 return
-            #printEmail(mail[0][1])
+            #parseEmail(mail[0][1])
             if mailbox == "INBOX":
                 saveToFolder(i,mail[0][1],INBOX_DIRECTORY)
             elif mailbox == "[Gmail]/Sent Mail":
