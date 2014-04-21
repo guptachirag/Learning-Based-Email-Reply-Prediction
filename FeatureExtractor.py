@@ -2,6 +2,7 @@ import email
 from bs4 import BeautifulSoup
 import EmailFetcher as ef
 from pprint import pprint
+
 interrogative_words=["could", "when", "where","how"]
 negative_words=["unsubscribe","no-reply","noreply","mailer"]
 
@@ -11,13 +12,15 @@ def words_present(all_text,keyword_list):   #checks if any word in all_text is p
     return False
 
 def extract_text( email_message_instance):
+    message = ""
     maintype = email_message_instance.get_content_maintype()
     if maintype == 'multipart':
         for part in email_message_instance.get_payload():
             if part.get_content_maintype() == 'text':
-                return part.get_payload()
+                message = message + part.get_payload()
     elif maintype == 'text':
-        return email_message_instance.get_payload()
+        message = message + email_message_instance.get_payload()
+    return message
 
 def parseEmail(emailString):
     message = email.message_from_string(emailString)
