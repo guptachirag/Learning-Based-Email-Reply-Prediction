@@ -2,7 +2,7 @@ import imaplib
 
 INBOX_DIRECTORY="email\inbox"   #Path where Inbox emails are saved
 SENT_DIRECTORY="email\sent"  #Path where Sent emails are saved
-Num_MAIL=20  #Number of mails to save on disk
+Num_MAIL=21  #Number of mails to save on disk
 
 def saveToFolder(num,data,directory):
     f = open('%s/%s.eml' %(directory, -num), 'wb')
@@ -29,9 +29,9 @@ def saveEmails(imap,mailbox):
     else :
         print "Unable to access ",mailbox
 
-def login():
-    username = raw_input("Enter emailid : ")
-    password = raw_input("Enter password : ")
+def login(username,password):
+    #username = raw_input("Enter emailid : ")
+    #password = raw_input("Enter password : ")
     imap = imaplib.IMAP4_SSL('imap.gmail.com')
 
     try:
