@@ -28,5 +28,3 @@ def interfaceFetchEmails():
 	B1 = Button(bottomframe, text ="Login", command = submitCallBack)
 	B1.pack()
 	root.mainloop()
-
-
