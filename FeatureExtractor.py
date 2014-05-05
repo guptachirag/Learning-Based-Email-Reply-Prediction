@@ -3,13 +3,17 @@ from bs4 import BeautifulSoup
 import EmailFetcher as ef
 from pprint import pprint
 
+CHIRAG = "chiragguptadtu@gmail.com"
+
 interrogative_words=["could", "which", "what" , "whose" , "who", "whom" ,"where", "when" ,"how" ,"why", "wherefore" ,"whether"]
 negative_words=["unsubscribe","no-reply","noreply","mailer"]
+
 
 def words_present(all_text,keyword_list):   #checks if any word in all_text is present in keyword_list
     if any(word in all_text for word in keyword_list):
         return True
     return False
+
 
 def extract_text( email_message_instance):
     message = ""
@@ -21,6 +25,7 @@ def extract_text( email_message_instance):
     elif maintype == 'text':
         message = message + email_message_instance.get_payload()
     return message
+
 
 def parseEmail(emailString):
     message = email.message_from_string(emailString)
@@ -64,24 +69,34 @@ def read_from_disk(directory):
         try:
             f = open('%s/%s.eml' %(directory, i), 'r')
             data=f.read()
+            emails.append(data)
             f.close()
-            emails.append(parseEmail(data))
         except:
             return emails 
     return emails
 
+
 def extractFeatures():
-    inboxEmails_feature = read_from_disk(ef.INBOX_DIRECTORY)
-    sentEmails_feature = read_from_disk(ef.SENT_DIRECTORY)
+    emails = read_from_disk(ef.INBOX_DIRECTORY)
+
+    inboxEmailFeatures = []
+    sentEmailFeatures = []
+
+    for email in emails:
+        emailFeatures = parseEmail(email)
+        if emailFeatures["From"] == CHIRAG:
+            sentEmailFeatures.append(emailFeatures)
+        else :
+            inboxEmailFeatures.append(emailFeatures)
 
     #classify the emails
-    for smail in sentEmails_feature :
+    for smail in sentEmailFeatures :
         if "In-Reply-To" in smail.keys():
-            for imail in inboxEmails_feature:
+            for imail in inboxEmailFeatures :
                 if imail["Message-ID"] == smail["In-Reply-To"]:
                     imail["reply"]=True
 
 
-    for i in inboxEmails_feature:
+    for i in inboxEmailFeatures :
         print "\n\n-----------------------------------------------------------\n"
         pprint(i)
