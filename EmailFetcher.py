@@ -1,16 +1,20 @@
 import imaplib
+import FeatureExtractor as fe
 
 INBOX_DIRECTORY="email\inbox"   #Path where Inbox emails are saved
 SENT_DIRECTORY="email\sent"  #Path where Sent emails are saved
-Num_MAIL=21  #Number of mails to save on disk
+Num_MAIL=201  #Number of mails to save on disk
+MAILBOX = "[Gmail]/All Mail"
+
 
 def saveToFolder(num,data,directory):
     f = open('%s/%s.eml' %(directory, -num), 'wb')
     f.write(data)
     f.close()
 
-def saveEmails(imap,mailbox):
-    status,data = imap.select(mailbox)
+
+def saveEmails(imap):
+    status,data = imap.select(MAILBOX)
     
     if status == 'OK' :
         status,data = imap.search(None,"ALL")
@@ -21,13 +25,11 @@ def saveEmails(imap,mailbox):
             if rv != 'OK' :
                 print "ERROR getting message", -i
                 return
-            #parseEmail(mail[0][1])
-            if mailbox == "INBOX":
-                saveToFolder(i,mail[0][1],INBOX_DIRECTORY)
-            elif mailbox == "[Gmail]/Sent Mail":
-                saveToFolder(i,mail[0][1],SENT_DIRECTORY)
+            #fe.parseEmail(mail[0][1])
+            saveToFolder(i,mail[0][1],INBOX_DIRECTORY)
     else :
-        print "Unable to access ",mailbox
+        print "Unable to access ",MAILBOX
+
 
 def login(username,password):
     #username = raw_input("Enter emailid : ")
@@ -41,6 +43,5 @@ def login(username,password):
 
     status,mailboxes = imap.list()
     #print status,mailboxes
-    saveEmails(imap,"INBOX")
-    saveEmails(imap,"[Gmail]/Sent Mail")
+    saveEmails(imap)
     imap.logout()
