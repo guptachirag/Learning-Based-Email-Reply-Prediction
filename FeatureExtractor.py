@@ -1,6 +1,7 @@
 import email
 from bs4 import BeautifulSoup
 import EmailFetcher as ef
+import Classifier as cf
 from pprint import pprint
 
 CHIRAG = "chiragguptadtu@gmail.com"
@@ -38,9 +39,9 @@ def parseEmail(emailString):
     mail["Message-ID"]=message["Message-ID"]
 
     if "Cc" in message.keys():
-        mail["Cc"] =  True
+        mail["Cc"] =  1
     else:
-        mail["Cc"] =  False
+        mail["Cc"] =  0
 
     if "In-Reply-To" in message.keys():
         mail["In-Reply-To"] =  message["In-Reply-To"];
@@ -84,9 +85,15 @@ def senderFrequency(sender,emails):
 def replied(messageid,sentEmails):
 	for email in sentEmails:
 		if messageid == email["In-Reply-To"]:
-			return True
-	return False
+			return 1
+	return 0
 
+
+def dictList(dictionary):
+	ret = []
+	for i in dictionary.keys():
+		ret.append(dictionary[i])
+	return ret
 
 def extractFeatures():
     emails = read_from_disk(ef.INBOX_DIRECTORY)
@@ -103,6 +110,7 @@ def extractFeatures():
             inboxEmails.append(email)
                    
     inboxEmailFeatures = []
+    output = []
     
 	# find numerical features
     for email in inboxEmails :
@@ -112,9 +120,13 @@ def extractFeatures():
     	features["reply"] = replied(email["Message-ID"],sentEmails)
     	features["is_interrogative_text"] = words_present(email["emailText"],interrogative_words)
     	features["Cc"]=email["Cc"]
-    	inboxEmailFeatures.append(features)
-    	
-    	
-    for i in inboxEmailFeatures :
-        print "\n\n-----------------------------------------------------------\n"
-        pprint(i)
+    	featureslist = dictList(features)
+    	output.append(features["reply"])
+    	inboxEmailFeatures.append(featureslist)
+    
+    result = cf.randomForrestClassifier(inboxEmailFeatures,output,inboxEmailFeatures)
+   	 	
+    #for i in inboxEmailFeatures :
+	   	#print "\n\n-----------------------------------------------------------\n"
+	   	#pprint(i)
+        
