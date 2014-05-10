@@ -3,7 +3,7 @@ import EmailFetcher as ef
 import gui
 
 def main() :
-    gui.interfaceFetchEmails()
+    #gui.interfaceFetchEmails()
     fe.extractFeatures()
 
 main()
