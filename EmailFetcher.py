@@ -1,8 +1,7 @@
 import imaplib
 import FeatureExtractor as fe
 
-INBOX_DIRECTORY="email\inbox"   #Path where Inbox emails are saved
-SENT_DIRECTORY="email\sent"  #Path where Sent emails are saved
+INBOX_DIRECTORY="email/inbox"   #Path where Inbox emails are saved
 Num_MAIL=201  #Number of mails to save on disk
 MAILBOX = "[Gmail]/All Mail"
 
