@@ -1,5 +1,6 @@
-from sklearn.ensemble import RandomForestClassifier
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import tree
 from sklearn import svm
 
 def accuracy(output,result):
@@ -13,28 +14,34 @@ def accuracy(output,result):
 	
 		
 
-def randomForrestClassifier(trainingFeatures,output,testFeatures):
+def classifiers(trainingFeatures,output,testFeatures):
 	trainingFeatures = np.array(trainingFeatures)
 	output = np.array(output)
 	testFeatures = np.array(testFeatures)
 	
+	print "Applying Random Forrest...\n"
+	#Random Forrest Classifier
 	clf = RandomForestClassifier(n_estimators=50)
-	clf = clf.fit(trainingFeatures[20:38],output[20:38])
-	result = clf.predict(testFeatures[:19])
-	
-	acc=(accuracy(output[:19],result))
-	print "randomForrest: %.2f "%(acc)
+	clf = clf.fit(trainingFeatures,output)
+	result_1 = clf.predict(testFeatures)
+	acc=(accuracy(output,result_1))
+	print "Random Forrest: %.2f "%(acc)
 
-	print clf.score(testFeatures[:19],output[:19])
+	print "\nApplying Support Vector Machine...\n"
+	#Support Vector Machine
 	clf_svm= svm.SVC(C=5)
-	clf_svm = clf_svm.fit(trainingFeatures[20:38],output[20:38])
-	result_2 = clf_svm.predict(testFeatures[:19])
-	
-	
-	#print output[:19]
-	#print result	
-	acc=(accuracy(output[:19],result_2))
-	print "SVM: %.2f "%(acc)
-	print clf_svm.score(testFeatures[:19],output[:19])
-	return (result)
+	clf_svm = clf_svm.fit(trainingFeatures,output)
+	result_2 = clf_svm.predict(testFeatures)
+	acc=(accuracy(output,result_2))
+	print "Support Vector Machine: %.2f "%(acc)
+
+	#Decision Tree Classifier
+	print "\nApplying Decision Tree Classifier\n"
+	clf = tree.DecisionTreeClassifier()
+	clf = clf.fit(trainingFeatures,output)
+	result_3 = clf.predict(testFeatures)
+	acc = (accuracy(output,result_3))
+	print "Decision Tree Classifier: %.2f "%(acc)
+
+	return result_1,result_2,result_3
 	
