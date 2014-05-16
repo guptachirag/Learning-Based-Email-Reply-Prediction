@@ -3,8 +3,10 @@ from bs4 import BeautifulSoup
 import EmailFetcher as ef
 import Classifier as cf
 from pprint import pprint
+import CSV 
 
 CHIRAG = "chiragguptadtu@gmail.com"
+DEFAULT = "default-id"
 
 interrogative_words=["could", "which", "what" , "whose" , "who", "whom" ,"where", "when" ,"how" ,"why", "wherefore" ,"whether"]
 negative_words=["unsubscribe","no-reply","noreply","mailer","automated"]
@@ -44,7 +46,9 @@ def parseEmail(emailString):
         mail["Cc"] =  0
 
     if "In-Reply-To" in message.keys():
-        mail["In-Reply-To"] =  message["In-Reply-To"];
+        mail["In-Reply-To"] =  message["In-Reply-To"]
+    else:
+        mail["In-Reply-To"] =  DEFAULT
 
     emailText = extract_text(message)
 
@@ -83,10 +87,10 @@ def senderFrequency(sender,emails):
 	
 
 def replied(messageid,sentEmails):
-	for email in sentEmails:
-		if messageid == email["In-Reply-To"]:
-			return 1
-	return 0
+        for email in sentEmails:
+                if messageid == email["In-Reply-To"]:
+                    return 1
+        return 0
 
 
 def dictList(dictionary):
@@ -117,14 +121,21 @@ def extractFeatures():
     	features = {}
     	features["sender_frequency"] = senderFrequency(email["From"],inboxEmails)
     	features["is_automated_mail"] = words_present(email["emailText"],negative_words)
-    	features["reply"] = replied(email["Message-ID"],sentEmails)
-    	features["is_interrogative_text"] = words_present(email["emailText"],interrogative_words)
+    	features["is_interrogative_text"] = words_present(email["emailText"] + email["Subject"],interrogative_words)
     	features["Cc"]=email["Cc"]
+        #features["reply"] = replied(email["Message-ID"],sentEmails)
     	featureslist = dictList(features)
-    	output.append(features["reply"])
+    	output.append(replied(email["Message-ID"],sentEmails))
     	inboxEmailFeatures.append(featureslist)
-    
-    result = cf.randomForrestClassifier(inboxEmailFeatures,output,inboxEmailFeatures)
+
+    #Machine Learning
+    print "Applying Machine Learning...\n"
+    inboxSize = len(inboxEmailFeatures)
+    halfSize = inboxSize/2
+    result_1,result_2,result_3 = cf.classifiers(inboxEmailFeatures[:halfSize],output[:halfSize],inboxEmailFeatures[halfSize:])
+
+    #dumping in csv
+    #CSV.listtocsv(inboxEmailFeatures[:halfSize],output[:halfSize],result_1,result_2,result_3)
    	 	
     #for i in inboxEmailFeatures :
 	   	#print "\n\n-----------------------------------------------------------\n"
